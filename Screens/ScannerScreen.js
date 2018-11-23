@@ -1,55 +1,108 @@
 import React from "react";
-import { TextInput } from "react-native";
-import { Container, Text, Button } from "native-base";
-import { Grid, Row, Col } from "react-native-easy-grid";
-import { AppLoading, Constants } from "expo";
+import { Dimensions, StyleSheet } from "react-native";
+import { Container, Text, Button, Footer } from "native-base";
+import { Grid, Row } from "react-native-easy-grid";
+import { withNavigationFocus } from "react-navigation";
+
+import { BarCodeScanner, Permissions, Constants } from "expo";
+import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
+
 import SQL from "../components/SQL";
 
 class ScannerScreen extends React.Component {
   static navigationOptions = {
     header: null //hide the header bar
   };
+
+  state = {
+    hasCameraPermission: null
+  };
+
+  async componentDidMount() {
+    // ask for camera permission
+    const { status } = await Permissions.askAsync(Permissions.CAMERA);
+    this.setState({ hasCameraPermission: status === "granted" });
+  }
+
   saveToDB = qr => {
     SQL.AddQR(qr);
   };
+
+  handleBarCodeScanned = ({ type, data }) => {
+    this.saveToDB(data);
+    this.props.navigation.navigate("Result", {
+      qr: data
+    });
+  };
+
   render() {
-    return (
-      <Container style={{ marginTop: Constants.statusBarHeight }}>
-        <Grid
-          style={{
-            alignItems: "center"
-          }}
-        >
-          <Row>
-            <Text>Scanner Screen</Text>
-          </Row>
-          <Row>
-            <TextInput
-              placeholder="Type here to the qr..."
-              onChangeText={qr => this.setState({ qr })}
-            />
-          </Row>
-          <Row>
-            <Button
-              onPress={() => {
-                this.saveToDB(this.state.qr);
-              }}
-            >
-              <Text>Add to db</Text>
-            </Button>
-          </Row>
-          <Row>
-            <Button onPress={() => this.props.navigation.navigate("History")}>
-              <Text>History</Text>
-            </Button>
-            <Button onPress={() => this.props.navigation.navigate("Result")}>
-              <Text>Result</Text>
-            </Button>
-          </Row>
-        </Grid>
-      </Container>
-    );
+    const { hasCameraPermission } = this.state;
+    // const buttonColor = "green";
+
+    if (hasCameraPermission === null) {
+      return <Text>Requesting for camera permission</Text>;
+    }
+    if (hasCameraPermission === false) {
+      return <Text>No access to camera</Text>;
+    }
+
+    if (this.props.isFocused) {
+      return (
+        <Container>
+          <BarCodeScanner
+            onBarCodeScanned={this.handleBarCodeScanned}
+            style={styles.barcodeScanner}
+          >
+            <Footer style={styles.layerBottom}>
+              <Grid>
+                <Row style={styles.layerBottomRow}>
+                  {/* <FontAwesome
+                  size={25}
+                  name="history"
+                  color={buttonColor}
+                  onPress={() => {
+                    this.props.navigation.navigate("History");
+                  }}
+                />
+                <MaterialCommunityIcons
+                  size={25}
+                  name={this.state.flash ? "flash" : "flash-off"}
+                  onPress={this.toggleFlash}
+                  color={buttonColor}
+                /> */}
+                  <Button
+                    onPress={() => this.props.navigation.navigate("History")}
+                  >
+                    <Text>History</Text>
+                  </Button>
+                </Row>
+              </Grid>
+            </Footer>
+          </BarCodeScanner>
+        </Container>
+      );
+    } else {
+      return (
+        <Container>
+          <Text>Loading...</Text>
+        </Container>
+      );
+    }
   }
 }
 
-export default ScannerScreen;
+const styles = StyleSheet.create({
+  barcodeScanner: {
+    height: Dimensions.get("window").height,
+    width: Dimensions.get("window").width,
+    flex: 1,
+    justifyContent: "flex-end"
+  },
+  layerBottom: { backgroundColor: "transparent" },
+  layerBottomRow: {
+    justifyContent: "center",
+    marginHorizontal: 50
+  }
+});
+
+export default withNavigationFocus(ScannerScreen);

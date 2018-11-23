@@ -32,7 +32,6 @@ export default class SQL {
           `select * from ${tableName} order by id DESC`,
           null,
           (_, { rows: { _array } }) => {
-            console.log("1", _array);
             resolve(_array);
           }
         );
