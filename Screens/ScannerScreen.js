@@ -4,8 +4,7 @@ import { Container, Text, Button, Footer } from "native-base";
 import { Grid, Row } from "react-native-easy-grid";
 import { withNavigationFocus } from "react-navigation";
 
-import { BarCodeScanner, Permissions, Constants } from "expo";
-import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
+import { BarCodeScanner, Permissions } from "expo";
 
 import SQL from "../components/SQL";
 
@@ -30,6 +29,7 @@ class ScannerScreen extends React.Component {
 
   handleBarCodeScanned = ({ type, data }) => {
     this.saveToDB(data);
+    //change screen to Result and pass scanned qr
     this.props.navigation.navigate("Result", {
       qr: data
     });
@@ -37,7 +37,6 @@ class ScannerScreen extends React.Component {
 
   render() {
     const { hasCameraPermission } = this.state;
-    // const buttonColor = "green";
 
     if (hasCameraPermission === null) {
       return <Text>Requesting for camera permission</Text>;
@@ -56,20 +55,6 @@ class ScannerScreen extends React.Component {
             <Footer style={styles.layerBottom}>
               <Grid>
                 <Row style={styles.layerBottomRow}>
-                  {/* <FontAwesome
-                  size={25}
-                  name="history"
-                  color={buttonColor}
-                  onPress={() => {
-                    this.props.navigation.navigate("History");
-                  }}
-                />
-                <MaterialCommunityIcons
-                  size={25}
-                  name={this.state.flash ? "flash" : "flash-off"}
-                  onPress={this.toggleFlash}
-                  color={buttonColor}
-                /> */}
                   <Button
                     onPress={() => this.props.navigation.navigate("History")}
                   >
