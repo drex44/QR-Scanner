@@ -1,12 +1,12 @@
 import React from "react";
 import { Dimensions, StyleSheet } from "react-native";
-import { Container, Text, Button, Footer } from "native-base";
+import { Container, Text, Footer } from "native-base";
 import { Grid, Row } from "react-native-easy-grid";
 import { withNavigationFocus } from "react-navigation";
-
 import { BarCodeScanner, Permissions } from "expo";
-
+import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 import SQL from "../components/SQL";
+import { SpinnerScreen } from "../components/commons";
 
 class ScannerScreen extends React.Component {
   static navigationOptions = {
@@ -27,6 +27,12 @@ class ScannerScreen extends React.Component {
     SQL.AddQR(qr);
   };
 
+  toggleFlash = data => {
+    this.setState(prevState => ({
+      flash: !prevState.flash
+    }));
+  };
+
   handleBarCodeScanned = ({ type, data }) => {
     this.saveToDB(data);
     //change screen to Result and pass scanned qr
@@ -36,43 +42,46 @@ class ScannerScreen extends React.Component {
   };
 
   render() {
-    const { hasCameraPermission } = this.state;
+    const buttonColor = "green";
 
-    if (hasCameraPermission === null) {
-      return <Text>Requesting for camera permission</Text>;
-    }
-    if (hasCameraPermission === false) {
-      return <Text>No access to camera</Text>;
-    }
-
-    if (this.props.isFocused) {
-      return (
-        <Container>
-          <BarCodeScanner
-            onBarCodeScanned={this.handleBarCodeScanned}
-            style={styles.barcodeScanner}
-          >
-            <Footer style={styles.layerBottom}>
-              <Grid>
-                <Row style={styles.layerBottomRow}>
-                  <Button
-                    onPress={() => this.props.navigation.navigate("History")}
-                  >
-                    <Text>History</Text>
-                  </Button>
-                </Row>
-              </Grid>
-            </Footer>
-          </BarCodeScanner>
-        </Container>
-      );
-    } else {
-      return (
-        <Container>
-          <Text>Loading...</Text>
-        </Container>
-      );
-    }
+    return this.state.hasCameraPermission === null ? (
+      <SpinnerScreen />
+    ) : this.state.hasCameraPermission === false ? (
+      <Message>
+        <Text>No access to camera</Text>
+      </Message>
+    ) : !this.state.scanned && this.props.isFocused ? (
+      <Container>
+        <BarCodeScanner
+          onBarCodeScanned={this.handleBarCodeScanned}
+          torchMode={this.state.flash ? "on" : "off"}
+          style={styles.barcodeScanner}
+        >
+          <Footer style={styles.layerBottom}>
+            <Grid>
+              <Row style={styles.layerBottomRow}>
+                <FontAwesome
+                  size={25}
+                  name="history"
+                  color={buttonColor}
+                  onPress={() => {
+                    this.props.navigation.navigate("History");
+                  }}
+                />
+                <MaterialCommunityIcons
+                  size={25}
+                  name={this.state.flash ? "flash" : "flash-off"}
+                  onPress={this.toggleFlash}
+                  color={buttonColor}
+                />
+              </Row>
+            </Grid>
+          </Footer>
+        </BarCodeScanner>
+      </Container>
+    ) : (
+      <SpinnerScreen />
+    );
   }
 }
 
@@ -85,8 +94,8 @@ const styles = StyleSheet.create({
   },
   layerBottom: { backgroundColor: "transparent" },
   layerBottomRow: {
-    justifyContent: "center",
-    marginHorizontal: 50
+    justifyContent: "space-between",
+    marginHorizontal: 70
   }
 });
 
