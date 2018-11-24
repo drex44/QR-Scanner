@@ -1,10 +1,10 @@
 import React from "react";
 import { Dimensions, StyleSheet } from "react-native";
-import { Container, Text, Footer } from "native-base";
+import { Container, Text, View } from "native-base";
 import { Grid, Row } from "react-native-easy-grid";
 import { withNavigationFocus } from "react-navigation";
 import { BarCodeScanner, Permissions } from "expo";
-import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
 import SQL from "../components/SQL";
 import { SpinnerScreen } from "../components/commons";
 
@@ -25,12 +25,6 @@ class ScannerScreen extends React.Component {
 
   saveToDB = qr => {
     SQL.AddQR(qr);
-  };
-
-  toggleFlash = data => {
-    this.setState(prevState => ({
-      flash: !prevState.flash
-    }));
   };
 
   handleBarCodeScanned = ({ type, data }) => {
@@ -54,29 +48,29 @@ class ScannerScreen extends React.Component {
       <Container>
         <BarCodeScanner
           onBarCodeScanned={this.handleBarCodeScanned}
-          torchMode={this.state.flash ? "on" : "off"}
           style={styles.barcodeScanner}
         >
-          <Footer style={styles.layerBottom}>
-            <Grid>
-              <Row style={styles.layerBottomRow}>
-                <FontAwesome
-                  size={25}
-                  name="history"
-                  color={buttonColor}
-                  onPress={() => {
-                    this.props.navigation.navigate("History");
-                  }}
-                />
-                <MaterialCommunityIcons
-                  size={25}
-                  name={this.state.flash ? "flash" : "flash-off"}
-                  onPress={this.toggleFlash}
-                  color={buttonColor}
-                />
-              </Row>
-            </Grid>
-          </Footer>
+          <Grid>
+            <Row style={styles.layerTop} size={1} />
+            <Row style={styles.layerCenter} size={2}>
+              {/* <View style={styles.layerCenter}> */}
+              <View style={styles.layerLeft} />
+              <View style={styles.focused} />
+              <View style={styles.layerRight} />
+              {/* </View> */}
+            </Row>
+            <Row style={styles.layerBottom} size={1}>
+              <FontAwesome
+                size={25}
+                name="history"
+                color={buttonColor}
+                onPress={() => {
+                  this.props.navigation.navigate("History");
+                }}
+                style={styles.bottomButtons}
+              />
+            </Row>
+          </Grid>
         </BarCodeScanner>
       </Container>
     ) : (
@@ -85,17 +79,38 @@ class ScannerScreen extends React.Component {
   }
 }
 
+const opacity = "rgba(0, 0, 0, .6)";
 const styles = StyleSheet.create({
   barcodeScanner: {
+    flex: 1,
     height: Dimensions.get("window").height,
     width: Dimensions.get("window").width,
-    flex: 1,
     justifyContent: "flex-end"
   },
-  layerBottom: { backgroundColor: "transparent" },
-  layerBottomRow: {
-    justifyContent: "space-between",
-    marginHorizontal: 70
+  layerTop: { backgroundColor: opacity },
+  layerCenter: {
+    flex: 1.4,
+    flexDirection: "row"
+  },
+  layerLeft: {
+    flex: 6,
+    backgroundColor: opacity
+  },
+  focused: {
+    flex: 30
+  },
+  layerRight: {
+    flex: 6,
+    backgroundColor: opacity
+  },
+  layerBottom: {
+    alignItems: "flex-end",
+
+    backgroundColor: opacity,
+    justifyContent: "center"
+  },
+  bottomButtons: {
+    marginBottom: 40
   }
 });
 

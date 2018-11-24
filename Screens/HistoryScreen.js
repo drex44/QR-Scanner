@@ -48,7 +48,7 @@ class HistoryScreen extends React.Component {
       );
     } else
       return (
-        <Container style={{ marginTop: Constants.statusBarHeight }}>
+        <Container>
           <Content>
             {qrs.map(qr => (
               <QRListItem key={qr.id} qr={qr} {...this.props} />
