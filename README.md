@@ -6,7 +6,7 @@ A React Native QR code scanner app built using Expo.
 
 <img alt="App GIF" src="docs/app.gif" width="300" /><img alt="History Screen" src="docs/history.png" width="300" />
 
-## Features
+### Features
 
 - Scans the QR code with the device camera.
 - Stores the scanned QR code locally in SQLite.
@@ -19,3 +19,11 @@ If you are interested in extending/improving this application in any way then ra
 ## Tutorial
 
 I have written detailed tutorial on how to create this app on Medium. If you are interested in learning it then check out the tutorial [here]().
+
+### Braches
+
+Refere to below desciption to choose the branch,
+
+- master: code for QR Scanner v1.0.0
+- v0.3.0: code for QR Scanner v0.3.0
+- v0.4.0: code for QR Scanner v0.4.0
