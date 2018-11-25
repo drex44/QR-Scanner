@@ -4,7 +4,7 @@ A React Native QR code scanner app built using Expo.
 
 ## Application preview
 
-- [To do]
+<img alt="App GIF" src="docs/app.gif" width="300" /><img alt="History Screen" src="docs/history.png" width="300" />
 
 ## Features
 
