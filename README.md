@@ -1,5 +1,7 @@
 # QR Scanner
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/drex44/QR-Scanner.svg)](https://greenkeeper.io/)
+
 A React Native QR code scanner app built using Expo.
 
 ## Application preview
